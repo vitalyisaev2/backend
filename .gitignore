@@ -1,1 +1,6 @@
-watcher
+# build staff
+build
+cmake-build-debug
+
+# project files
+.idea

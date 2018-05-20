@@ -1,5 +1,6 @@
 #include <iostream>
 #include <./partition_list.h>
+#include "disk_usage_watcher.h"
 
 int main(int argc, char **argv) {
 
@@ -11,7 +12,8 @@ int main(int argc, char **argv) {
     try {
         PartitionList pl;
         auto partition = pl.GetPartitionByPath(argv[1]);
-        std::cout << partition << std::endl;
+        auto watcher = DiskUsageWatcher(partition, std::chrono::seconds(1));
+        watcher.Run();
     } catch (std::exception const& ex) {
         std::cerr << ex.what() << std::endl;
         return 1;

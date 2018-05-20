@@ -8,7 +8,9 @@
 
 #include <./partition_list.h>
 
-PartitionList::PartitionList(): partitions(0) {
+PartitionList::PartitionList()
+    : partitions(0)
+{
 
     // распарсить список разделов из procfs
     std::ifstream infile("/proc/partitions");
@@ -20,8 +22,7 @@ PartitionList::PartitionList(): partitions(0) {
     }
 
     // сформировать список разделов
-    while(std::getline(infile, line))
-    {
+    while (std::getline(infile, line)) {
         std::istringstream ss(line);
         PartitionInfo *pi = new PartitionInfo;
         ss >> pi->major >> pi->minor >> pi->blocks >> pi->name;
@@ -31,7 +32,8 @@ PartitionList::PartitionList(): partitions(0) {
 }
 
 // get_device возвращает major/minor номера раздела
-std::tuple<unsigned int, unsigned int> get_device_id(const char* path) {
+std::tuple<unsigned int, unsigned int> get_device_id(const char *path)
+{
     struct stat buf;
 
     auto ret = stat(path, &buf);
@@ -41,14 +43,15 @@ std::tuple<unsigned int, unsigned int> get_device_id(const char* path) {
     }
 
     return std::make_tuple(major(buf.st_dev), minor(buf.st_dev));
-};
+}
 
 
-std::string PartitionList::GetPartitionByPath(const char *path) {
+std::string PartitionList::GetPartitionByPath(const char *path) const
+{
     unsigned int major_id, minor_id;
     std::tie(major_id, minor_id) = get_device_id(path);
 
-    for (auto const& pi: this->partitions) {
+    for (auto const &pi: this->partitions) {
         if (pi->major == major_id && pi->minor == minor_id) {
             return pi->name;
         }
@@ -58,8 +61,9 @@ std::string PartitionList::GetPartitionByPath(const char *path) {
     throw std::runtime_error(msg);
 }
 
-PartitionList::~PartitionList() {
-    for (auto & pi: this->partitions) {
+PartitionList::~PartitionList()
+{
+    for (auto &pi: this->partitions) {
         delete pi;
     }
 }
